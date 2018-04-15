@@ -2,13 +2,14 @@
 
 include("functions.php");
 
-if(isset($_POST['name']))
+if(isset($_POST['userName']))
 {
-$name= mysqli_real_escape_string($conn, $_POST['name']);
-$query="SELECT * from users where uemail='$name'";
+$name= mysqli_real_escape_string($conn, $_POST['userName']);
+$query="SELECT * from users where UserName='$name'";
 $result = $conn->query($query);
 if ($result->num_rows == 0) 
 {
+	echo "No Match Found";
 }
 else
 {
