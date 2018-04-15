@@ -1,3 +1,4 @@
+    <?php include ("functions.php"); ?>
 <!DOCTYPE html>
 <html lang="en">
    <head>
@@ -20,7 +21,7 @@
                         <div class="panel panel-success">
                            <div class="panel-heading" align="center"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Signin</div>
                            <div class="panel-body">
-                              <form class="form-horizontal" name="login" action="login.php" method="post">
+                              <form class="form-horizontal" name="login" action="index.php" method="post">
                                  <div class="form-group">
                                     <label for="userName" class="col-sm-3 control-label">Username</label>
                                     <div class="col-sm-10">
@@ -40,6 +41,51 @@
                                     </div>
                                  </div>
                               </form>
+<?php   
+  $wrongpass = '';
+  $wronginfo = '<div class="alert alert-danger" role="alert">  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Wrong login detail</div>';
+
+  if(isloggedin()==FALSE)
+  {
+  }
+  else
+  {
+  header("location:home.php");  
+    
+  }
+    
+    if(isset($_POST['username']) && ($_POST['password']))
+  {
+
+  $pass= mysqli_real_escape_string($conn, $_POST['password']);
+  $username= mysqli_real_escape_string($conn, $_POST['username']);
+  $query = sprintf("SELECT * FROM `user` where `UserName`='%s';",$username);
+  $result = $conn->query($query);
+
+  if ($result->num_rows < 1) 
+    {
+        $wrongpass = $wronginfo;
+    }
+
+   while($row = $result->fetch_assoc()) 
+      {
+    if(md5($pass)==$row['Password'])
+    {
+      $_SESSION['logged_in']=TRUE;
+      $_SESSION['id']=$row['UserID'];
+      $_SESSION['unaam']=$row['UserName'];
+      session_start();
+      header("location:home.php");
+    }
+    else
+     {
+      $wrongpass = $wronginfo;
+     }
+      }
+    }
+
+
+ ?>
                            </div>
                         </div>
                      </div>
@@ -51,7 +97,7 @@
                         <div class="panel panel-primary">
                            <div class="panel-heading" align="center"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Create New User</div>
                            <div class="panel-body">
-                              <form class="form-horizontal" action="signup.php" method="post">
+                              <form class="form-horizontal" action="index.php" method="post">
                                 <div class="form-group">
                                     <label for="fullName" class="col-sm-3 control-label">FullName</label>
                                     <div class="col-sm-10">
@@ -93,6 +139,35 @@
                                     </div>
                                  </div>
                               </form>
+<?php
+if (isset($_POST['usernamesignup']) && trim($_POST['passwordsignup']) != "") {
+    $name = mysqli_real_escape_string($conn, $_POST['usernamesignup']);
+    $query = "SELECT * from user where UserName='$name'";
+    $result = $conn->query($query);
+    if ($result->num_rows < 1) {
+        $fname = mysqli_real_escape_string($conn, $_POST['fullnamesignup']);
+        $fname = strip_tags($fname);
+        $uname = mysqli_real_escape_string($conn, $_POST['usernamesignup']);
+        $uname = strip_tags($uname);
+        $uemail = mysqli_real_escape_string($conn, $_POST['emailsignup']);
+        $uemail = strip_tags($uemail);
+        $upass = mysqli_real_escape_string($conn, $_POST['passwordsignup']);
+        $upass = md5($upass);
+        $query = sprintf("INSERT INTO `user` (`FullName`, `UserName`, `Email`, `Password`) VALUES ('%s', '%s', '%s','%s');", $fname, $uname, $uemail, $upass);
+        if ($conn->query($query) === TRUE) {
+            echo '<div class="alert alert-success" role="alert">
+  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Your account has been created successfully!
+</div>';
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+    } else {
+        echo '<div class="alert alert-danger" role="alert">
+  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> You already have an account and can access from login form
+</div>';
+    }
+}
+?>
                            </div>
                         </div>
                      </div>
@@ -123,3 +198,5 @@
       </script>
    </body>
 </html>
+
+

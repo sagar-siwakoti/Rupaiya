@@ -5,7 +5,7 @@ include("functions.php");
 if(isset($_POST['userName']))
 {
 $name= mysqli_real_escape_string($conn, $_POST['userName']);
-$query="SELECT * from users where UserName='$name'";
+$query="SELECT * from user where UserName='$name'";
 $result = $conn->query($query);
 if ($result->num_rows == 0) 
 {
